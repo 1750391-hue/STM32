@@ -132,7 +132,8 @@ int main(void)
 	  //Faig algun canvi per comprobar la branca aquesta
 	  for(int i=0;i<ADC2_CH;i++)
 	      adc2_volt[i] = adc2_buf[i] * VREF / 4095.0f;
-
+	  while (1)
+	  {}
 	  /* Per després comunicar amb CAN
 	   	   	   uint8_t msg[8];
 
