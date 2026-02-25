@@ -57,7 +57,11 @@ uint16_t adc2_buf[ADC2_CH]; //RfSHU [0], RSIGlvs [1]
 float adc1_volt[ADC1_CH];
 float adc2_volt[ADC2_CH];
 
-const float VREF = 3.3f;
+const float VREF = 3.3;
+
+FDCAN_RxHeaderTypeDef RxHeader;
+uint8_t RxData[8];
+uint32_t datoRecibido = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -117,6 +121,25 @@ int main(void)
   // Arrancar DMA
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_buf, ADC1_CH);
   HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adc2_buf, ADC2_CH);
+
+  FDCAN_FilterConfigTypeDef sFilterConfig;
+
+  // Configuración para aceptar todos los mensajes con ID estándar
+  sFilterConfig.IdType = FDCAN_STANDARD_ID;
+  sFilterConfig.FilterIndex = 0;
+  sFilterConfig.FilterType = FDCAN_FILTER_RANGE;
+  sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
+  sFilterConfig.FilterID1 = 0x000;
+  sFilterConfig.FilterID2 = 0x7FF; // Accepta IDs desde la 00 fins la 7FF
+
+  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK) {
+      Error_Handler();
+  }
+
+  HAL_FDCAN_Start(&hfdcan1);
+
+  // Activar la interrupción de "Mensaje nuevo en FIFO 0"
+  HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,11 +150,11 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  for(int i=0;i<ADC1_CH;i++)
-	      adc1_volt[i] = adc1_buf[i] * VREF / 4095.0f;
+	      adc1_volt[i] = adc1_buf[i] * VREF / 4095.0;
 
 	  //Faig algun canvi per comprobar la branca aquesta
 	  for(int i=0;i<ADC2_CH;i++)
-	      adc2_volt[i] = adc2_buf[i] * VREF / 4095.0f;
+	      adc2_volt[i] = adc2_buf[i] * VREF / 4095.0;
 	  while (1)
 	  {}
 	  /* Per després comunicar amb CAN
@@ -492,7 +515,21 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
+{
+    if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != RESET)
+    {
+        // Extraer el mensaje del buzón
+        if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK)
+        {
+            // Ejemplo: Si el mensaje tiene ID 0x100, guardamos el primer byte
+            if (RxHeader.Identifier == 0x100)
+            {
+                datoRecibido = RxData[0];
+            }
+        }
+    }
+}
 /* USER CODE END 4 */
 
 /**
