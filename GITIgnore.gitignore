@@ -1,0 +1,23 @@
+# Archivos de compilación (Basura que genera el IDE)
+Debug/
+Release/
+bin/
+obj/
+
+# Archivos de configuración local del usuario
+.settings/
+.launches/
+*.launch
+.targetconf
+
+# Reportes y logs
+*.log
+*.map
+*.list
+
+# Archivos temporales de CubeMX
+*.tmp
+*.bak
+
+# Archivos pesados de base de datos del IDE
+.db
