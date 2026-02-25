@@ -128,7 +128,8 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  for(int i=0;i<ADC1_CH;i++)
 	      adc1_volt[i] = adc1_buf[i] * VREF / 4095.0f;
-	  //Prova de guardat a git
+
+	  //Faig algun canvi per comprobar la branca aquesta
 	  for(int i=0;i<ADC2_CH;i++)
 	      adc2_volt[i] = adc2_buf[i] * VREF / 4095.0f;
 
