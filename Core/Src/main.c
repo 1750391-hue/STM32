@@ -154,7 +154,6 @@ int main(void)
   while (1)
   {
 	F2P_ProcessADC();
-	adc1_RAW.
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
   }
