@@ -51,11 +51,24 @@ FDCAN_HandleTypeDef hfdcan1;
 #define ADC1_CH 6 // Definim 6 perquè son els espais a la array contant l'espai 0 com un, es a dir que la array serà de [0-5].
 #define ADC2_CH 2 // el mateix fins però amb [0, 1].
 
-uint16_t adc1_buf[ADC1_CH];	//RfSIGOtempI [0], RfSIGItempI [1], RfSIGOtempM [2], RfSIGItempM [3], RSIGLsus [4], RSIGRsus [5].
-uint16_t adc2_buf[ADC2_CH]; //RfSHU [0], RSIGlvs [1]
+uint16_t adc1_buf[ADC1_CH];
+uint16_t adc2_buf[ADC2_CH];
 
-float adc1_volt[ADC1_CH];
-float adc2_volt[ADC2_CH];
+//Crear una struct per guardar cada valor del buffer de la DMA
+typedef union {
+    float array[ADC1_CH];
+    struct {
+        float RfSIGOtempI;
+        float RfSIGItempI;
+        float RfSIGOtempM;
+        float RfSIGItempM;
+        float RSIGLsus;
+        float RSIGRsus;
+        float RfSHU;
+        float RSIGlvs;
+    };
+} AdcData_t;
+AdcData_t adc_volt;
 
 const float VREF = 3.3;
 
@@ -72,7 +85,7 @@ static void MX_FDCAN1_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_ADC2_Init(void);
 /* USER CODE BEGIN PFP */
-
+void GetAnalogValueFromDMAinV(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -124,12 +137,12 @@ int main(void)
 
   FDCAN_FilterTypeDef sFilterConfig;
 
-  sFilterConfig.IdType = FDCAN_STANDARD_ID;
+  sFilterConfig.IdType = FDCAN_STANDARD_ID; // 11 bits de ID
   sFilterConfig.FilterIndex = 0;
   sFilterConfig.FilterType = FDCAN_FILTER_RANGE;
   sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
-  sFilterConfig.FilterID1 = 0x000;
-  sFilterConfig.FilterID2 = 0x7FF;
+  sFilterConfig.FilterID1 = 0x000; //Flitre de IDs desde la 000 fins la 7FF
+  sFilterConfig.FilterID2 = 0x7FF; //
 
   if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK)
   {
@@ -145,16 +158,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
-	  for(int i=0;i<ADC1_CH;i++)
-	      adc1_volt[i] = adc1_buf[i] * VREF / 4095.0;
 
-	  //Faig algun canvi per comprobar la branca aquesta
-	  for(int i=0;i<ADC2_CH;i++)
-	      adc2_volt[i] = adc2_buf[i] * VREF / 4095.0;
-	  while (1)
-	  {}
+	GetAnalogValueFromDMAinV();
 	  /* Per després comunicar amb CAN
 	   	   	   uint8_t msg[8];
 
@@ -528,6 +534,15 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
         }
     }
 }
+
+void GetAnalogValueFromDMAinV(void)
+{
+	for(int i=0;i<ADC1_CH;i++)
+	{ adc_volt.array[i] = adc1_buf[i] * VREF / 4095.0; }
+
+	for(int i=0;i<ADC2_CH;i++)
+	{ adc_volt.array[i + ADC1_CH] = adc2_buf[i] * VREF / 4095.0; }
+}
 /* USER CODE END 4 */
 
 /**
@@ -540,8 +555,7 @@ void Error_Handler(void)
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
-  {
-  }
+  {}
   /* USER CODE END Error_Handler_Debug */
 }
 #ifdef USE_FULL_ASSERT
