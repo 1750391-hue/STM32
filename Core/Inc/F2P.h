@@ -12,6 +12,7 @@
 
 #define ADC1_CH 8
 
+//Unió de Array amb Struct, cada espai de la array es un punt de la struct (Ex: array[3] = RfSIGItempM)
 typedef union {
     float array[ADC1_CH];
     struct {
