@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "F2P.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,29 +48,12 @@ DMA_HandleTypeDef hdma_adc2;
 FDCAN_HandleTypeDef hfdcan1;
 
 /* USER CODE BEGIN PV */
-#define ADC1_CH 6 // Definim 6 perquè son els espais a la array contant l'espai 0 com un, es a dir que la array serà de [0-5].
-#define ADC2_CH 2 // el mateix fins però amb [0, 1].
 
-uint16_t adc1_buf[ADC1_CH];
-uint16_t adc2_buf[ADC2_CH];
+#define DMA_CH1 6
+#define DMA_CH2 2
 
-//Crear una struct per guardar cada valor del buffer de la DMA
-typedef union {
-    float array[ADC1_CH];
-    struct {
-        float RfSIGOtempI;
-        float RfSIGItempI;
-        float RfSIGOtempM;
-        float RfSIGItempM;
-        float RSIGLsus;
-        float RSIGRsus;
-        float RfSHU;
-        float RSIGlvs;
-    };
-} AdcData_t;
-AdcData_t adc_volt;
-
-const float VREF = 3.3;
+uint16_t adc1_buf[DMA_CH1];
+uint16_t adc2_buf[DMA_CH2];
 
 FDCAN_RxHeaderTypeDef RxHeader;
 uint8_t RxData[8];
@@ -89,7 +72,6 @@ static void MX_FDCAN1_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_ADC2_Init(void);
 /* USER CODE BEGIN PFP */
-void GetAnalogValueFromDMAinV(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -136,8 +118,8 @@ int main(void)
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
 
   // Arrancar DMA
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_buf, ADC1_CH);
-  HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adc2_buf, ADC2_CH);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_buf, DMA_CH1);
+  HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adc2_buf, DMA_CH2);
 
   FDCAN_FilterTypeDef sFilterConfig;
 
@@ -171,16 +153,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	F2P_ProcessADC();
+	adc1_RAW.
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
-
-	GetAnalogValueFromDMAinV();
-	  /* Per després comunicar amb CAN
-	   	   	   uint8_t msg[8];
-
-		msg[0] = adc1_buf[0] >> 8;
-		msg[1] = adc1_buf[0] & 0xFF;
-	   */
   }
   /* USER CODE END 3 */
 }
@@ -253,7 +229,7 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.GainCompensation = 0;
@@ -365,7 +341,7 @@ static void MX_ADC2_Init(void)
   /** Common config
   */
   hadc2.Instance = ADC2;
-  hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+  hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
   hadc2.Init.Resolution = ADC_RESOLUTION_12B;
   hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc2.Init.GainCompensation = 0;
@@ -547,15 +523,6 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
             }
         }
     }
-}
-
-void GetAnalogValueFromDMAinV(void)
-{
-	for(int i=0;i<ADC1_CH;i++)
-	{ adc_volt.array[i] = adc1_buf[i] * VREF / 4095.0; }
-
-	for(int i=0;i<ADC2_CH;i++)
-	{ adc_volt.array[i + ADC1_CH] = adc2_buf[i] * VREF / 4095.0; }
 }
 /* USER CODE END 4 */
 

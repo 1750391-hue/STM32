@@ -8,9 +8,26 @@
 #ifndef INC_F2P_H_
 #define INC_F2P_H_
 
-#include "main.h" // Para tener acceso a las librerías HAL
+#include "main.h"
 
-// Prototipos de tus funciones
-void F2P_Process(void);
+#define ADC1_CH 8
+
+typedef union {
+    float array[ADC1_CH];
+    struct {
+    	float RfSIGOtempI;
+    	float RfSIGItempI;
+    	float RfSIGOtempM;
+    	float RfSIGItempM;
+    	float RSIGLsus;
+    	float RSIGRsus;
+    	float RfSHU;
+    	float RSIGlvs;
+    };
+} Adc1Data_t;
+
+extern Adc1Data_t adc1_RAW;
+
+void F2P_ProcessADC(void);
 
 #endif /* INC_F2P_H_ */
