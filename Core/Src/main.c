@@ -122,23 +122,21 @@ int main(void)
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc1_buf, ADC1_CH);
   HAL_ADC_Start_DMA(&hadc2, (uint32_t*)adc2_buf, ADC2_CH);
 
-  FDCAN_FilterConfigTypeDef sFilterConfig;
+  FDCAN_FilterTypeDef sFilterConfig;
 
-  // Configuración para aceptar todos los mensajes con ID estándar
   sFilterConfig.IdType = FDCAN_STANDARD_ID;
   sFilterConfig.FilterIndex = 0;
   sFilterConfig.FilterType = FDCAN_FILTER_RANGE;
   sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
   sFilterConfig.FilterID1 = 0x000;
-  sFilterConfig.FilterID2 = 0x7FF; // Accepta IDs desde la 00 fins la 7FF
+  sFilterConfig.FilterID2 = 0x7FF;
 
-  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK) {
-      Error_Handler();
+  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK)
+  {
+    Error_Handler();
   }
 
   HAL_FDCAN_Start(&hfdcan1);
-
-  // Activar la interrupción de "Mensaje nuevo en FIFO 0"
   HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
   /* USER CODE END 2 */
 
