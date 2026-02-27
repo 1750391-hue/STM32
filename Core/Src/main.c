@@ -75,6 +75,10 @@ const float VREF = 3.3;
 FDCAN_RxHeaderTypeDef RxHeader;
 uint8_t RxData[8];
 uint32_t datoRecibido = 0;
+
+FDCAN_TxHeaderTypeDef TxHeader;
+uint8_t TxData[8];
+uint32_t TxMailbox;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -151,6 +155,16 @@ int main(void)
 
   HAL_FDCAN_Start(&hfdcan1);
   HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
+
+  TxHeader.Identifier = 0x123; // RearECUID
+  TxHeader.IdType = FDCAN_STANDARD_ID;        // ID de 11 bits
+  TxHeader.TxFrameType = FDCAN_DATA_FRAME;
+  TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+  TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+  TxHeader.BitRateSwitch = FDCAN_BR_OFF;
+  TxHeader.FDFormat = FDCAN_CLASSIC_CAN;
+  TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+  TxHeader.MessageMarker = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
