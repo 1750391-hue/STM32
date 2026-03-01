@@ -132,7 +132,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = RSIGRsus_Pin|RSIGLsus_Pin;
+    GPIO_InitStruct.Pin = RfSIGRsus_Pin|RfSIGLsus_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -194,10 +194,10 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(RfSHU_GPIO_Port, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = RSIGlvs_Pin;
+    GPIO_InitStruct.Pin = RfSIGlvs_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(RSIGlvs_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(RfSIGlvs_GPIO_Port, &GPIO_InitStruct);
 
     /* ADC2 DMA Init */
     /* ADC2 Init */
@@ -256,7 +256,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     */
     HAL_GPIO_DeInit(GPIOA, RfSIGOtempI_Pin|RfSIGItempI_Pin|RfSIGOtempM_Pin|RfSIGItempM_Pin);
 
-    HAL_GPIO_DeInit(GPIOB, RSIGRsus_Pin|RSIGLsus_Pin);
+    HAL_GPIO_DeInit(GPIOB, RfSIGRsus_Pin|RfSIGLsus_Pin);
 
     /* ADC1 DMA DeInit */
     HAL_DMA_DeInit(hadc->DMA_Handle);
@@ -291,7 +291,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     */
     HAL_GPIO_DeInit(RfSHU_GPIO_Port, RfSHU_Pin);
 
-    HAL_GPIO_DeInit(RSIGlvs_GPIO_Port, RSIGlvs_Pin);
+    HAL_GPIO_DeInit(RfSIGlvs_GPIO_Port, RfSIGlvs_Pin);
 
     /* ADC2 DMA DeInit */
     HAL_DMA_DeInit(hadc->DMA_Handle);
