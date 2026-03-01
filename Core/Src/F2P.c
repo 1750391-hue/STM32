@@ -5,6 +5,7 @@
  *      Author: oriol
  */
 #include "F2P.h"
+#include "main.h"
 
 #define ADC1_CH 6 // Definim 6 perquè son els espais a la array contant l'espai 0 com un, es a dir que la array serà de [0-5].
 #define ADC2_CH 2 // el mateix fins però amb [0, 1].

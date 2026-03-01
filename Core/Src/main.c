@@ -155,6 +155,7 @@ int main(void)
   {
 	F2P_ProcessADC();
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -488,19 +489,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RfSDChvd_Pin RfSDCtsms_Pin RfSDClsdb_Pin RfSDCrsdb_Pin
-                           RfSIGRspeed_Pin */
-  GPIO_InitStruct.Pin = RfSDChvd_Pin|RfSDCtsms_Pin|RfSDClsdb_Pin|RfSDCrsdb_Pin
-                          |RfSIGRspeed_Pin;
+  /*Configure GPIO pins : RfSDChvd_Pin RfSDCtsms_Pin RfSDClsdb_Pin RfSDCrsdb_Pin */
+  GPIO_InitStruct.Pin = RfSDChvd_Pin|RfSDCtsms_Pin|RfSDClsdb_Pin|RfSDCrsdb_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : RfSIGLspeed_Pin */
-  GPIO_InitStruct.Pin = RfSIGLspeed_Pin;
+  /*Configure GPIO pins : RfSIGLspeed_Pin RfSIGRspeed_Pin */
+  GPIO_InitStruct.Pin = RfSIGLspeed_Pin|RfSIGRspeed_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(RfSIGLspeed_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
