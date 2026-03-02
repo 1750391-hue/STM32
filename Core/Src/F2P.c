@@ -13,17 +13,23 @@
 extern uint16_t adc1_buf[ADC1_CH];
 extern uint16_t adc2_buf[ADC2_CH];
 
-// Tu estructura global
-Adc1Data_t adc1_volt;
+AdcData_t Padc;
+GPIOINData_t gpioin;
 
 void F2P_ProcessADC(void) {
 
     for(int i = 0; i < ADC1_CH; i++) {
-        adc1_volt.array[i] = (float)adc1_buf[i];
+        Padc.array[i] = (float)adc1_buf[i];
     }
 
     for(int i = 0; i < ADC2_CH; i++) {
-        adc1_volt.array[i + ADC1_CH] = (float)adc2_buf[i];
+        Padc.array[i + ADC1_CH] = (float)adc2_buf[i];
     }
 }
 
+void F2P_ProcessGPIOIN(void) {
+	gpioin.RpSDChvd = HAL_GPIO_ReadPin(GPIOB, RfSDChvd_Pin);
+	gpioin.RpSDCtsms = HAL_GPIO_ReadPin(GPIOB, RfSDCtsms_Pin);
+	gpioin.RpSDClsdb = HAL_GPIO_ReadPin(GPIOB, RfSDClsdb_Pin);
+	gpioin.RpSDCrsdb = HAL_GPIO_ReadPin(GPIOC, RfSDCrsdb_Pin);
+}

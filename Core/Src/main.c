@@ -154,6 +154,7 @@ int main(void)
   while (1)
   {
 	F2P_ProcessADC();
+	F2P_ProcessGPIOIN();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -531,6 +532,8 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
+	uint32_t errorCodeADC2 = hadc2.ErrorCode;
+	uint32_t stateADC2 = HAL_ADC_GetState(&hadc2);
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
